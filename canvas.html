@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Greg is Cül</title>
+
+        <style>
+            canvas {
+                border: 1px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="myCanvas" width="500px" height="500px"></canvas>
+
+        <img
+            src="chicken.png"
+            width="10%"
+            height="10%"
+            alt="Minecraft chicken"
+        />
+
+        <script type="text/javascript">
+            var canvas = document.getElementById('myCanvas');
+            var ctx = canvas.getContext('2d');
+
+            var rWidth = 300;
+            var rHeight = 300;
+            var cRadius = 100;
+
+            var rSpeed = 10;
+            var cSpeed = 6;
+
+            var rXPos = 50;
+            var rYPos = 200;
+
+            var cXPos = 50;
+            var cYPos = 200;
+
+            var rXDirection = 1;
+            var rYDirection = 1;
+
+            var cXDirection = 1;
+            var cYDirection = 1;
+
+            var rLeftPressed = false;
+            var rRightPressed = false;
+            var rUpPressed = false;
+            var rDownPressed = false;
+
+            var cLeftPressed = false;
+            var cRightPressed = false;
+            var cUpPressed = false;
+            var cDownPressed = false;
+
+            var Game = {};
+
+            /**
+             * Let shapes move on their own
+             */
+            function autoMovement() {
+                rXPos += rSpeed * rXDirection;
+                rYPos += rSpeed * rYDirection;
+
+                cXPos += cSpeed * cXDirection;
+                cYPos += cSpeed * cYDirection;
+
+                if (rXPos > canvas.width || rXPos < 0) rXDirection *= -1;
+                if (rYPos > canvas.width || rYPos < 0) rYDirection *= -1;
+
+                if (cXPos > canvas.width || cXPos < 0) cXDirection *= -1;
+                if (cYPos > canvas.width || cYPos < 0) cYDirection *= -1;
+            }
+
+            /**
+             * Wrap shape around
+             */
+            function wrap() {
+                // Rectangle
+                if (rXPos > canvas.width) rXPos = 0 - rWidth;
+                if (rXPos < 0 - rWidth) rXPos = canvas.width;
+                if (rYPos > canvas.height) rYPos = 0;
+                if (rYPos < 0 - rHeight) rYPos = canvas.height;
+
+                // Circle
+                if (cXPos > canvas.width + cRadius) cXPos = 0 - cRadius;
+                if (cXPos < 0 - cRadius) cXPos = canvas.width + cRadius;
+                if (cYPos > canvas.height + cRadius) cYPos = 0 - cRadius;
+                if (cYPos < 0 - cRadius) cYPos = canvas.height + cRadius;
+            }
+
+            /**
+             * Controlled movement
+             */
+            function move() {
+                // Rectangle
+                if (rLeftPressed) rXPos -= rSpeed;
+                if (rRightPressed) rXPos += rSpeed;
+                if (rDownPressed) rYPos += rSpeed;
+                if (rUpPressed) rYPos -= rSpeed;
+
+                // Circle
+                if (cLeftPressed) cXPos -= cSpeed;
+                if (cRightPressed) cXPos += cSpeed;
+                if (cDownPressed) cYPos += cSpeed;
+                if (cUpPressed) cYPos -= cSpeed;
+
+                wrap();
+            }
+
+            Game.update = function () {
+                move();
+            };
+
+            Game.draw = function () {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(rXPos, rYPos, 300, rHeight);
+
+                ctx.beginPath();
+
+                ctx.fillStyle = '#ff0000';
+
+                // x, y, radius, start of arc in radians, end of arc in radians
+                ctx.arc(cXPos, cYPos, cRadius, 0, 2 * Math.PI);
+                ctx.fill();
+            };
+
+            Game.run = function () {
+                Game.update();
+                Game.draw();
+            };
+
+            Game.fps = 100;
+
+            Game._intervalId = setInterval(Game.run, 1000 / Game.fps);
+
+            //clearInterval(Game._intervalId);
+
+            var kLeft = 37;
+            var kRight = 39;
+            var kUp = 38;
+            var kDown = 40;
+
+            var kW = 87;
+            var kA = 65;
+            var kS = 83;
+            var kD = 68;
+
+            window.onkeydown = function (e) {
+                var key = e.keyCode ? e.keyCode : e.which;
+
+                // Rectangle
+
+                // left
+                if (key == kLeft) rLeftPressed = true;
+                // right
+                if (key == kRight) rRightPressed = true;
+                // down
+                if (key == kDown) rDownPressed = true;
+                // up
+                if (key == kUp) rUpPressed = true;
+
+                // Circle
+
+                // left
+                if (key == kA) cLeftPressed = true;
+                // right
+                if (key == kD) cRightPressed = true;
+                // down
+                if (key == kS) cDownPressed = true;
+                // up
+                if (key == kW) cUpPressed = true;
+            };
+
+            window.onkeyup = function (e) {
+                var key = e.keyCode ? e.keyCode : e.which;
+
+                // Rectangle
+
+                // left
+                if (key == kLeft) rLeftPressed = false;
+                // right
+                if (key == kRight) rRightPressed = false;
+                // down
+                if (key == kDown) rDownPressed = false;
+                // up
+                if (key == kUp) rUpPressed = false;
+
+                // Circle
+
+                // left
+                if (key == kA) cLeftPressed = false;
+                // right
+                if (key == kD) cRightPressed = false;
+                // down
+                if (key == kS) cDownPressed = false;
+                // up
+                if (key == kW) cUpPressed = false;
+            };
+        </script>
+    </body>
+</html>
