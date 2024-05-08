@@ -12,38 +12,75 @@
         </style>
     </head>
     <body>
+        <img id="picture" src="chicken.png" alt="Minecraft chicken" hidden />
+
         <canvas id="myCanvas" width="500px" height="500px"></canvas>
 
-        <img
-            src="chicken.png"
-            width="10%"
-            height="10%"
-            alt="Minecraft chicken"
-        />
-
         <script type="text/javascript">
+            var img = document.getElementById('picture');
             var canvas = document.getElementById('myCanvas');
+
             var ctx = canvas.getContext('2d');
 
+            // Size
             var rWidth = 300;
             var rHeight = 300;
             var cRadius = 100;
+            var iHeight = 130;
+            var iWidth = 100;
 
+            const randomRGB = () => {
+                return [
+                    Math.floor(Math.random() * 255),
+                    Math.floor(Math.random() * 255),
+                    Math.floor(Math.random() * 255),
+                ];
+            };
+
+            const colorChange = (colors) => {
+                const colorChangeSpeed = 1;
+                const newColors = [];
+                return [
+                    (colors[0] + colorChangeSpeed) % 255,
+                    (colors[1] + colorChangeSpeed) % 255,
+                    (colors[2] + colorChangeSpeed) % 255,
+                ];
+            };
+
+            const getRGBString = (colors) => {
+                return `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
+            };
+
+            // Speed
             var rSpeed = 10;
             var cSpeed = 6;
+            var iSpeed = 8;
 
+            // Position
             var rXPos = 50;
             var rYPos = 200;
 
             var cXPos = 50;
             var cYPos = 200;
 
+            var iXPos = 0;
+            var iYPos = 0;
+
+            // Direction
             var rXDirection = 1;
             var rYDirection = 1;
 
             var cXDirection = 1;
             var cYDirection = 1;
 
+            var iXDirection = 1;
+            var iYDirection = 1;
+
+            // Color
+            var rColor = randomRGB();
+            var cColor = randomRGB();
+
+            // Key presses
             var rLeftPressed = false;
             var rRightPressed = false;
             var rUpPressed = false;
@@ -53,6 +90,11 @@
             var cRightPressed = false;
             var cUpPressed = false;
             var cDownPressed = false;
+
+            var iLeftPressed = false;
+            var iRightPressed = false;
+            var iUpPressed = false;
+            var iDownPressed = false;
 
             var Game = {};
 
@@ -88,6 +130,12 @@
                 if (cXPos < 0 - cRadius) cXPos = canvas.width + cRadius;
                 if (cYPos > canvas.height + cRadius) cYPos = 0 - cRadius;
                 if (cYPos < 0 - cRadius) cYPos = canvas.height + cRadius;
+
+                // Image
+                if (iXPos > canvas.width) iXPos = 0 - iWidth;
+                if (iXPos < 0 - iWidth) iXPos = canvas.width;
+                if (iYPos > canvas.height) iYPos = 0;
+                if (iYPos < 0 - iHeight) iYPos = canvas.height;
             }
 
             /**
@@ -106,6 +154,12 @@
                 if (cDownPressed) cYPos += cSpeed;
                 if (cUpPressed) cYPos -= cSpeed;
 
+                // Image
+                if (iLeftPressed) iXPos -= iSpeed;
+                if (iRightPressed) iXPos += iSpeed;
+                if (iDownPressed) iYPos += iSpeed;
+                if (iUpPressed) iYPos -= iSpeed;
+
                 wrap();
             }
 
@@ -116,16 +170,21 @@
             Game.draw = function () {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                ctx.fillStyle = '#000000';
+                // Rectangle
+                rColor = colorChange(rColor);
+                ctx.fillStyle = getRGBString(rColor);
                 ctx.fillRect(rXPos, rYPos, 300, rHeight);
 
+                // Circle
                 ctx.beginPath();
-
-                ctx.fillStyle = '#ff0000';
-
+                cColor = colorChange(cColor);
+                ctx.fillStyle = getRGBString(cColor);
                 // x, y, radius, start of arc in radians, end of arc in radians
                 ctx.arc(cXPos, cYPos, cRadius, 0, 2 * Math.PI);
                 ctx.fill();
+
+                // Image
+                ctx.drawImage(img, iXPos, iYPos, iWidth, iHeight);
             };
 
             Game.run = function () {
@@ -137,17 +196,20 @@
 
             Game._intervalId = setInterval(Game.run, 1000 / Game.fps);
 
-            //clearInterval(Game._intervalId);
+            const kLeft = 37;
+            const kRight = 39;
+            const kUp = 38;
+            const kDown = 40;
 
-            var kLeft = 37;
-            var kRight = 39;
-            var kUp = 38;
-            var kDown = 40;
+            const kW = 87;
+            const kA = 65;
+            const kS = 83;
+            const kD = 68;
 
-            var kW = 87;
-            var kA = 65;
-            var kS = 83;
-            var kD = 68;
+            const kH = 72;
+            const kJ = 74;
+            const kK = 75;
+            const kL = 76;
 
             window.onkeydown = function (e) {
                 var key = e.keyCode ? e.keyCode : e.which;
@@ -173,6 +235,17 @@
                 if (key == kS) cDownPressed = true;
                 // up
                 if (key == kW) cUpPressed = true;
+
+                // Image
+
+                // left
+                if (key == kH) iLeftPressed = true;
+                // right
+                if (key == kL) iRightPressed = true;
+                // down
+                if (key == kJ) iDownPressed = true;
+                // up
+                if (key == kK) iUpPressed = true;
             };
 
             window.onkeyup = function (e) {
@@ -199,6 +272,17 @@
                 if (key == kS) cDownPressed = false;
                 // up
                 if (key == kW) cUpPressed = false;
+
+                // Image
+
+                // left
+                if (key == kH) iLeftPressed = false;
+                // right
+                if (key == kL) iRightPressed = false;
+                // down
+                if (key == kJ) iDownPressed = false;
+                // up
+                if (key == kK) iUpPressed = false;
             };
         </script>
     </body>
